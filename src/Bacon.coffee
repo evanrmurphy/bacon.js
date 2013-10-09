@@ -922,7 +922,7 @@ Bacon.when = (patterns...) ->
        pat = {f: (if isFunction(f) then f else (-> f)), ixs: []}
        for s in patSources
          assert (s instanceof Observable), usage
-         index = sources.indexOf s
+         index = indexOf(sources, s)
          if index < 0
             sources.push(s)
             index = sources.length - 1
@@ -1014,6 +1014,7 @@ class CompositeUnsubscribe
   empty: =>
     @count() == 0
 
+Bacon.CompositeUnsubscribe = CompositeUnsubscribe
 
 class Some
   constructor: (@value) ->
