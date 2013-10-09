@@ -41,17 +41,24 @@
           .map(isEmpty)
           .assign($("#enabling button"), "attr", "disabled")
 
-      $echoInput0 = $('#echo input:eq(0)')
-      $echoInput1 = $('#echo input:eq(1)')
-      $echoInput0
-        .asEventStream('keypress')
-        .map(function(e) {
-          var char = String.fromCharCode(e.which)
-          return $(e.target).val() + char
-         })
-        .onValue(function(str) { $echoInput1.val(str) })
+        $('#echo input:eq(0)')
+          .asEventStream('keyup')
+          .map(function(e) { return $(e.target).val() })
+          .onValue(function(str) { $('#echo input:eq(1)').val(str) })
+ 
+        //number = 0
+        //incr = $('#counter .incr').asEventStream('click').map(1)
+        //decr = $('#counter .decr').asEventStream('click').map(-1)
+        //both = incr.merge(decr).onValue(function(val) { 
+        //  number += val 
+        //  $('#counter .number').text(number)
+        //})
 
-        //$('#calculator')
+        ups = $('#counter .incr').asEventStream('click').map(1)
+        downs = $('#counter .decr').asEventStream('click').map(-1)
+        upsAndDowns = ups.merge(downs)
+        counter = upsAndDowns.scan(0, function(a,b) { return a + b })
+        counter.onValue(function(val) { $('#counter .number').text(val) })
       })
     </script>
   </head>
@@ -75,9 +82,15 @@
       <div><input type="text" placeholder="If you say something..."></div>
       <div><input type="text" placeholder="...I'll say it right back"></div>
     </div>
+    <div id="counter">
+      <h2>Counter example:</h2>
+      <button class="decr">-</button>
+      <button class="incr">+</button>
+      <span class="number"></span>
+    </div>
     <div id="calculator">
       <h2>Calculator example:</h2>
-      <input> + <input> = <span class="result"></span>
+      <input type="number"> + <input> = <span class="result"></span>
     </div>
   </body>
 </html>
