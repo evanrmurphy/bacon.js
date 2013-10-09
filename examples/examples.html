@@ -3,7 +3,7 @@
     <script src="../lib/jquery.js"></script>
     <script src="../dist/Bacon.js"></script>
     <script>
-      $(function() {
+      //$(function() {
         function isEmpty(s) { return s.length == 0 }
 
         function always(value) { return function() { return value }}
@@ -26,6 +26,7 @@
             .toProperty("UP")
         }
 
+      $(function() {
         $("#clikme")
           .asEventStream("click")
           .subscribe(function(event) { alert("mmmm... bacon!") })
@@ -39,6 +40,11 @@
           .toProperty("")
           .map(isEmpty)
           .assign($("#enabling button"), "attr", "disabled")
+
+        $('#echo input:eq(0)')
+          .asEventStream('keyup')
+          .map(function(e) { return $(e.target).val() })
+          .onValue(function(str) { $('#echo input:eq(1)').val(str) })
       })
     </script>
   </head>
@@ -56,5 +62,11 @@
       <h2>Enable/disable example:</h2>
       <input type="text" placeholder="required field">
       <button>Don't push me</button>
+    </div>
+    <div id="echo">
+      <h2>Echo example:</h2>
+      <div><input type="text" placeholder="If you say something..."></div>
+      <div><input type="text" placeholder="...I'll say it right back"></div>
+    </div>
   </body>
 </html>
