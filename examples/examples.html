@@ -3,7 +3,7 @@
     <script src="../lib/jquery.js"></script>
     <script src="../dist/Bacon.js"></script>
     <script>
-      //$(function() {
+      $(function() {
         function isEmpty(s) { return s.length == 0 }
 
         function always(value) { return function() { return value }}
@@ -26,7 +26,6 @@
             .toProperty("UP")
         }
 
-      $(function() {
         $("#clikme")
           .asEventStream("click")
           .subscribe(function(event) { alert("mmmm... bacon!") })
@@ -54,11 +53,27 @@
         //  $('#counter .number').text(number)
         //})
 
-        ups = $('#counter .incr').asEventStream('click').map(1)
-        downs = $('#counter .decr').asEventStream('click').map(-1)
-        upsAndDowns = ups.merge(downs)
-        counter = upsAndDowns.scan(0, function(a,b) { return a + b })
-        counter.onValue(function(val) { $('#counter .number').text(val) })
+        ;(function() {
+          var ups = $('#counter .incr').asEventStream('click').map(1)
+            , downs = $('#counter .decr').asEventStream('click').map(-1)
+            , upsAndDowns = ups.merge(downs)
+            , counter = upsAndDowns.scan(0, function(a,b) { return a + b })
+          counter.onValue(function(val) { $('#counter .number').text(val) })
+        })()
+
+        ;(function() {
+          var a, b, c
+          a = $('#calculator .a')
+                .asEventStream('change')
+                .map(function(e) { return parseInt($(e.target).val()) })
+                .toProperty( parseInt($('#calculator .a').val()) )
+          b = $('#calculator .b')
+                .asEventStream('change')
+                .map(function(e) { return parseInt($(e.target).val()) })
+                .toProperty( parseInt($('#calculator .b').val()) )
+          c = a.combine(b, function(x, y) { return x + y})
+          c.onValue(function(n) { $('#calculator .c').text(n) })
+        })()
       })
     </script>
   </head>
@@ -90,7 +105,9 @@
     </div>
     <div id="calculator">
       <h2>Calculator example:</h2>
-      <input type="number"> + <input> = <span class="result"></span>
+      <input type="number" value="0" class="a">
+        + <input type="number" value="0" class="b">
+        = <span class="c"></span>
     </div>
   </body>
 </html>
