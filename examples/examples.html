@@ -45,19 +45,10 @@
           .map(function(e) { return $(e.target).val() })
           .onValue(function(str) { $('#echo input:eq(1)').val(str) })
  
-        //number = 0
-        //incr = $('#counter .incr').asEventStream('click').map(1)
-        //decr = $('#counter .decr').asEventStream('click').map(-1)
-        //both = incr.merge(decr).onValue(function(val) { 
-        //  number += val 
-        //  $('#counter .number').text(number)
-        //})
-
         ;(function() {
           var ups = $('#counter .incr').asEventStream('click').map(1)
             , downs = $('#counter .decr').asEventStream('click').map(-1)
-            , upsAndDowns = ups.merge(downs)
-            , counter = upsAndDowns.scan(0, function(a,b) { return a + b })
+            , counter = ups.merge(downs).scan(0, function(a,b) { return a + b })
           counter.onValue(function(val) { $('#counter .number').text(val) })
         })()
 
