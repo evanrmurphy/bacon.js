@@ -41,10 +41,17 @@
           .map(isEmpty)
           .assign($("#enabling button"), "attr", "disabled")
 
-        $('#echo input:eq(0)')
-          .asEventStream('keyup')
-          .map(function(e) { return $(e.target).val() })
-          .onValue(function(str) { $('#echo input:eq(1)').val(str) })
+      $echoInput0 = $('#echo input:eq(0)')
+      $echoInput1 = $('#echo input:eq(1)')
+      $echoInput0
+        .asEventStream('keypress')
+        .map(function(e) {
+          var char = String.fromCharCode(e.which)
+          return $(e.target).val() + char
+         })
+        .onValue(function(str) { $echoInput1.val(str) })
+
+        //$('#calculator')
       })
     </script>
   </head>
@@ -67,6 +74,10 @@
       <h2>Echo example:</h2>
       <div><input type="text" placeholder="If you say something..."></div>
       <div><input type="text" placeholder="...I'll say it right back"></div>
+    </div>
+    <div id="calculator">
+      <h2>Calculator example:</h2>
+      <input> + <input> = <span class="result"></span>
     </div>
   </body>
 </html>
