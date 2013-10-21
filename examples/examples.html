@@ -53,17 +53,20 @@
         })()
 
         ;(function() {
-          var a, b, c
-          a = $('#calculator .a')
-                .asEventStream('change')
-                .map(function(e) { return parseInt($(e.target).val()) })
-                .toProperty( parseInt($('#calculator .a').val()) )
-          b = $('#calculator .b')
-                .asEventStream('change')
-                .map(function(e) { return parseInt($(e.target).val()) })
-                .toProperty( parseInt($('#calculator .b').val()) )
-          c = a.combine(b, function(x, y) { return x + y})
-          c.onValue(function(n) { $('#calculator .c').text(n) })
+          $('#calculator button')
+            .asEventStream('click')
+            .map(function(e) { return $(e.target).text() })
+            .scan('', function(a, b) {
+              try {
+                if (a === 'ERROR') return b
+                if (b === '=') return String(eval(a))
+                return a.concat(b)
+              } catch (e) {
+                if (e instanceof SyntaxError) return 'ERROR'
+                throw e
+              }
+            })
+            .assign($('#calculator .display'), 'text')
         })()
       })
     </script>
@@ -96,9 +99,33 @@
     </div>
     <div id="calculator">
       <h2>Calculator example:</h2>
-      <input type="number" value="0" class="a">
-        + <input type="number" value="0" class="b">
-        = <span class="c"></span>
+      <table>
+        <tr><td class="display" colspan="4"></td></tr>
+        <tr>
+          <td><button>7</button></td>
+          <td><button>8</button></td>
+          <td><button>9</button></td>
+          <td><button>/</button></td>
+        </tr>
+        <tr>
+          <td><button>4</button></td>
+          <td><button>5</button></td>
+          <td><button>6</button></td>
+          <td><button>*</button></td>
+        </tr>
+        <tr>
+          <td><button>1</button></td>
+          <td><button>2</button></td>
+          <td><button>3</button></td>
+          <td><button>-</button></td>
+        </tr>
+        <tr>
+          <td><button>0</button></td>
+          <td><button>.</button></td>
+          <td><button class="eval">=</button></td>
+          <td><button>+</button></td>
+        </tr>
+      </table>
     </div>
   </body>
 </html>
