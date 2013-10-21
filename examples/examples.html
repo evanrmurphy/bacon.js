@@ -40,10 +40,10 @@
           .map(isEmpty)
           .assign($("#enabling button"), "attr", "disabled")
 
-        $('#echo input:eq(0)')
+        $('#echo input')
           .asEventStream('keyup')
           .map(function(e) { return $(e.target).val() })
-          .onValue(function(str) { $('#echo input:eq(1)').val(str) })
+          .onValue(function(str) { $('#echo .output').text(str) })
  
         ;(function() {
           var ups = $('#counter .incr').asEventStream('click').map(1)
@@ -85,8 +85,8 @@
     </div>
     <div id="echo">
       <h2>Echo example:</h2>
-      <div><input type="text" placeholder="If you say something..."></div>
-      <div><input type="text" placeholder="...I'll say it right back"></div>
+      <input type="text">
+      <span class="output"></span>
     </div>
     <div id="counter">
       <h2>Counter example:</h2>
