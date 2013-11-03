@@ -251,7 +251,9 @@
     if (!isFunction(f)) {
       _ref1 = [f, streams[0]], streams = _ref1[0], f = _ref1[1];
     }
-    return Bacon.when(streams, f);
+    return Bacon.when(_.map((function(s) {
+      return s.toEventStream();
+    }), streams), f);
   };
 
   Bacon.combineAsArray = function() {
@@ -1134,16 +1136,18 @@
       var left;
       left = this;
       return new EventStream(function(sink) {
-        var unsub;
-        unsub = left.subscribe(function(e) {
+        var unsubLeft, unsubRight;
+        unsubRight = nop;
+        unsubLeft = left.subscribe(function(e) {
           if (e.isEnd()) {
-            return unsub = right.subscribe(sink);
+            return unsubRight = right.subscribe(sink);
           } else {
             return sink(e);
           }
         });
         return function() {
-          return unsub();
+          unsubLeft();
+          return unsubRight();
         };
       });
     };
@@ -1807,7 +1811,7 @@
       for (_i = 0, _len = patSources.length; _i < _len; _i++) {
         s = patSources[_i];
         assert(s instanceof Observable, usage);
-        index = sources.indexOf(s);
+        index = indexOf(sources, s);
         if (index < 0) {
           sources.push(s);
           index = sources.length - 1;
@@ -1970,7 +1974,6 @@
         if (_this.unsubscribed) {
           return;
         }
-        unsub();
         ended = true;
         _this.remove(unsub);
         return _.remove(subscription, _this.starting);
@@ -1983,11 +1986,13 @@
       return unsub;
     };
 
-    CompositeUnsubscribe.prototype.remove = function(subscription) {
+    CompositeUnsubscribe.prototype.remove = function(unsub) {
       if (this.unsubscribed) {
         return;
       }
-      return _.remove(subscription, this.subscriptions);
+      if ((_.remove(unsub, this.subscriptions)) !== void 0) {
+        return unsub();
+      }
     };
 
     CompositeUnsubscribe.prototype.unsubscribe = function() {
@@ -2019,6 +2024,8 @@
     return CompositeUnsubscribe;
 
   })();
+
+  Bacon.CompositeUnsubscribe = CompositeUnsubscribe;
 
   Some = (function() {
     function Some(value) {
